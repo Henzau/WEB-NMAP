@@ -8,15 +8,18 @@ Those are all my ideas and to sum up :
 
 Objectif : Create a tool in python which is my main programming language to analyze a website or application code in order to realize a security audit on the website/application.
 
-# environment
+# Environment
 GitHub, Cython, C, Python, Js, CVE.
 
-# research links
+# Research links
 https://reqbin.com/
 https://github.com/Kong/insomnia
 https://deviniti.com/blog/software-engineering/how-to-audit-api-step-by-step/
 https://www.cve.org
 https://cve.mitre.org/
+
+# Tools
+https://trello.com/b/tYD9ZQUJ/plannification 
 
 
  
