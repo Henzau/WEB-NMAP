@@ -1,0 +1,33 @@
+.Home{
+  
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    justify-content:space-between;
+    font-size: calc(10px + 2vmin);
+    color: white;
+  }
+  .transbutton{
+    background-color: transparent;
+    border : none;
+    
+  }
+  .Button{
+    background-color: blueviolet;
+    color: white;
+    font-size: 20px;
+    padding: 1vh 10vw;
+    border-radius: 5px;
+    margin-top: 15vh;
+    cursor: pointer;  
+  }
+  .App-logo-2{
+    height: 30vh;
+    
+  }
+  .NameButton{
+    margin-top: 10vh;
+    margin-bottom: 5vh;
+  }
+  

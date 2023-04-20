@@ -1,0 +1,46 @@
+.Display{
+  
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: calc(10px + 2vmin);
+    color: white;
+    height: 70vh;
+    
+
+}
+.data{
+    padding: 10%;
+}
+.info{
+  z-index: 3;
+  font-weight: bold;
+}
+  
+.App-logo{
+  margin-top: 10vh;
+  margin-bottom: 10vh;
+}
+
+.result{
+  height: 50vh;
+  width: 100vw;
+  align-items: center;
+  z-index: 2;
+  padding-top: 1vh;
+  
+}
+
+.Imagesong{
+  width : 100vw; 
+  height : 100vw;
+  opacity: 0.2;
+  position: absolute;
+  margin-top: -17vh;
+  z-index: 1;
+}
+
+ 
+  
