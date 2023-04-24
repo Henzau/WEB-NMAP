@@ -1,0 +1,32 @@
+For the frontend :
+
+package-lock.json : contains every packages download and the version used, we could do read file -> transform it to a json object and check every version and packages
+package.json : to know with js is used for the frontend ( Vuesjs react Nodejs etc ...) it work for every NPM site
+
+then we can check the packages CVE online but how ?
+actually there is a npm command that does the trick : npm audit : 
+https://docs.npmjs.com/auditing-package-dependencies-for-security-vulnerabilities
+
+Site for database packages vulnerability and fixes : 
+https://github.com/advisories?query=ecosystem%3Anpm  It is open source and user upload the vuln they found
+
+Alternative to npm for website : yarn
+pnpm 
+they both have a audit command call
+
+what to do ? can use it 
+
+the tool will now change  :
+
+First analyze package, then display a map of every packages then run audit and display the same map collored with 3 colors for the severity of each vulnerability found
+suggest improuvment
+
+Then try to optimize the audit fonction/ find unused packages.
+
+Ask the user Authorization to modify code.
+
+
+
+Clone the CVE database https://github.com/github/advisory-database into a Local repository, transform the raw data that is hard to use into a simple Database that I will be able to use.
+
+Then make request to this database and show a report
