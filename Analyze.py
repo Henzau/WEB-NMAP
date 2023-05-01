@@ -161,16 +161,13 @@ def CompareVersion(B,CVEList,data,way,i):
         case 1 :
             versionA = data["affected"][i]["database_specific"]["last_known_affected_version_range"]
             if "<=" in versionA :
-                print("Test1")
                 if version.parse(B[1]) <= version.parse(versionA.split()[1]):
                 #CVE still active
                     CVEList.append(data)
             elif "<" in versionA :
-                print("test2")
                 if version.parse(B[1]) < version.parse(versionA.split()[1]):
                     CVEList.append(data)
             else :
-                print("test3")
                 if version.parse(B[1]) <= version.parse(versionA):
                     CVEList.append(data)
 
@@ -245,14 +242,15 @@ def WhichWay(data):
 
 
 
-#This fonction will test one package and give back the list of cve json or an empty array if no cve was found, this is the bruteforce way, meaning it will check every cve.
+#This fonction will test one package and give back the list of cve json or an empty array if no cve was found, this is the bruteforce way, meaning it will check every cve in the dir.
 def TestPackage(Package,PathNewDB):
     CVEList= []
-   
+    if Package[0].split("/")[-1] == "minimist":
+        print(Package)
     #print(Package[0].split("/")[-1])
-    if Package[0] in os.listdir("./NewDB") :
+    if Package[0].split("/")[-1] in os.listdir("./NewDB") :
         #Check every CVE on this package
-        for i, (root, dirs, filenames) in enumerate(os.walk(PathNewDB+'/'+Package[0])):
+        for i, (root, dirs, filenames) in enumerate(os.walk(PathNewDB+'/'+Package[0].split("/")[-1])):
             for file in filenames :
                 try:
                     f = open(root+'/'+file,encoding="utf8")
@@ -260,25 +258,17 @@ def TestPackage(Package,PathNewDB):
                     print("An error as occured in the TestPackage")
                     return -2
                 data=json.load(f)
-                print(root+'/'+file)
                 way = WhichWay(data)
                 
-                print(len(data["affected"]))
                 for i in range(len(data["affected"])):
                     CompareVersion(Package,CVEList,data,way,i)
     return CVEList
 
 
 
-            
-    
-
-
-
-
 if __name__ == "__main__":
     info = GetPackages('./AppTest/package-lock.json')
-    ProcessRawDB("C:/Users/blood/source/repos/RawDB/advisory-database/advisories/github-reviewed","./NewDB")
+    #ProcessRawDB("C:/Users/blood/source/repos/RawDB/advisory-database/advisories/github-reviewed","./NewDB")
     
     print(len(info))
     nbCVE=0
