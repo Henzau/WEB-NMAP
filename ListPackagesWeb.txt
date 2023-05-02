@@ -1331,7 +1331,7 @@
 ('node-libs-browser/node_modules/readable-stream', '2.3.7')
 ('node-libs-browser/node_modules/readable-stream/node_modules/string_decoder', '1.1.1')
 ('node-libs-browser/node_modules/safe-buffer', '5.1.2')
-('node-libs-browser/node_modules/string_decoder', '0.10.31')
+('node-libs-browser/node_modules/string_decoder', '0.10.31',CVE=true, severity = number,fixed=number )
 ('node-releases', '2.0.8')
 ('normalize-path', '3.0.0')
 ('normalize-range', '0.1.2')

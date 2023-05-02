@@ -5,34 +5,124 @@ from packaging import version # easy way to compare version
 import re
 import string
 
+ #use java convention
 
-#camel case
-#PathFile to the file "package-lock.json"
-def GetPackages(PathFile):
-    # Opening JSON file
-    f = open(PathFile)
-  
-    # returns JSON object as 
-    # a dictionary
-    data = json.load(f)
-    packages = []
-  
-    # Iterating through the json
-    # list
-    for i in data['packages']:
-        version = data['packages'][i]['version']
-        name = i[13:]
-        packages.append((name,version))
+class Analyze:
+    def __init__(self):
+        self.listCVE = []
+        self.nbCVE = 0
 
-    #we have a tuple with the name of the packages and the version of the packages downloaded  
-    # Closing file
-    f.close()
-    return packages
+    def compareVersion(self,B,data,way,i):
+    versionA = []
+    versionB = []
+    match way:
+        case 1 :
+            versionA = data["affected"][i]["database_specific"]["last_known_affected_version_range"]
+            if "<=" in versionA :
+                if version.parse(B[1]) <= version.parse(versionA.split()[1]):
+                #CVE still active
+                    self.listCVE.append(data)
+            elif "<" in versionA :
+                if version.parse(B[1]) < version.parse(versionA.split()[1]):
+                    self.listCVE.append(data)
+            else :
+                if version.parse(B[1]) <= version.parse(versionA):
+                    self.listCVE.append(data)
+
+        case 2 :
+            versionA=data["affected"][0]["ranges"][0]["events"][0]["introduced"]
+            versionB=data["affected"][0]["ranges"][0]["events"][1]["fixed"]
+            if "pre" in versionA :
+                versionA = versionA.replace("pre","")
+            if "<=" in versionB :
+                if version.parse(B[1]) >= version.parse(versionA.split()[1]) and version.parse(B[1]) <= version.parse(versionB.split()[1]):
+                #CVE still active
+                    self.listCVE.append(data)
+            else :
+                if version.parse(B[1]) >= version.parse(versionA) and version.parse(B[1]) <= version.parse(versionB):
+                    self.listCVE.append(data)
+
+        case 3 :
+            versionA=data["affected"][0]["ranges"][0]["events"][0]["introduced"]
+            versionB=data["affected"][0]["ranges"][0]["events"][1]["last_affected"]
+            if "<=" in versionB :
+                if version.parse(B[1]) >= version.parse(versionA.split()[1]) and version.parse(B[1]) <= version.parse(versionB.split()[1]):
+                #CVE still active
+                    self.listCVE.append(data)
+            else :
+                if version.parse(B[1]) >= version.parse(versionA) and version.parse(B[1]) < version.parse(versionB):
+                    self.listCVE.append(data)
+
+        case 4 :
+            self.listCVE.append(data)
+
+        case 5 :
+            print("ERROR in CVE")
+
+        case 6 :
+            
+            if version.parse(B[1]) > version.parse("2.0.2"):
+                self.listCVE.append(data)
+        
+        case _ :
+            print("ERROR compare")
+
+    #Check how to get info in the DB
+    def selectWay(self,data):
+        versionA = []
+        try :
+        
+            versionA = data["affected"][i]["database_specific"]["last_known_affected_version_range"]
+        
+            return 1                            
+        except :
+            try :
+                if len(data["affected"][0]["ranges"][0]["events"]) >1 :
+                    try :
+                        versionA=data["affected"][0]["ranges"][0]["events"][1]["fixed"]
+                        return 2
+                    except :
+                        versionA=data["affected"][0]["ranges"][0]["events"][1]["last_affected"]
+                        return 3
+                else :
+                    try:
+                        #CVEList.append(data)
+                        return 4
+                    except:
+                        return 5
+            except :
+                return 6
+                #if Package[1] > "2.0.2":
+                 #   CVEList.append(data)
+                  #  print(root+'/'+file)
+                   # print(data)
+        return 'error'
+
+
+
+    #This fonction will test one package and give back the list of cve json or an empty array if no cve was found, this is the bruteforce way, meaning it will check every cve in the dir.
+    def testPackage(self,package,pathNewDB):
+        #print(Package[0].split("/")[-1])
+        if package[0].split("/")[-1] in os.listdir("./NewDB") :
+            #Check every CVE on this package
+            for i, (root, dirs, filenames) in enumerate(os.walk(pathNewDB+'/'+Package[0].split("/")[-1])):
+                for file in filenames :
+                    try:
+                        f = open(root+'/'+file,encoding="utf8")
+                    except Exception:
+                        print("An error as occured in the TestPackage")
+                        return -2
+                    data=json.load(f)
+                    way = WhichWay(data)
+                
+                    for i in range(len(data["affected"])):
+                        CompareVersion(Package,data,way,i)
+    
 
 
 #PathDir -> path to the rawDB
 #PathNewDB -> path where to save the new DATABASE
-def ProcessRawDB(PathDir,PathNewDB):
+def processRawDB(PathDir,PathNewDB):
     count =0
     file = "GHSA-hgpf-97c5-74fc.json"
     for i, (root, dirs, filenames) in enumerate(os.walk(PathDir)):
@@ -154,115 +244,7 @@ def ProcessRawDB(PathDir,PathNewDB):
               
 
  
-def CompareVersion(B,CVEList,data,way,i):
-    versionA = []
-    versionB = []
-    match way:
-        case 1 :
-            versionA = data["affected"][i]["database_specific"]["last_known_affected_version_range"]
-            if "<=" in versionA :
-                if version.parse(B[1]) <= version.parse(versionA.split()[1]):
-                #CVE still active
-                    CVEList.append(data)
-            elif "<" in versionA :
-                if version.parse(B[1]) < version.parse(versionA.split()[1]):
-                    CVEList.append(data)
-            else :
-                if version.parse(B[1]) <= version.parse(versionA):
-                    CVEList.append(data)
 
-        case 2 :
-            versionA=data["affected"][0]["ranges"][0]["events"][0]["introduced"]
-            versionB=data["affected"][0]["ranges"][0]["events"][1]["fixed"]
-            if "pre" in versionA :
-                versionA = versionA.replace("pre","")
-            if "<=" in versionB :
-                if version.parse(B[1]) >= version.parse(versionA.split()[1]) and version.parse(B[1]) <= version.parse(versionB.split()[1]):
-                #CVE still active
-                    CVEList.append(data)
-            else :
-                if version.parse(B[1]) >= version.parse(versionA) and version.parse(B[1]) <= version.parse(versionB):
-                    CVEList.append(data)
-
-        case 3 :
-            versionA=data["affected"][0]["ranges"][0]["events"][0]["introduced"]
-            versionB=data["affected"][0]["ranges"][0]["events"][1]["last_affected"]
-            if "<=" in versionB :
-                if version.parse(B[1]) >= version.parse(versionA.split()[1]) and version.parse(B[1]) <= version.parse(versionB.split()[1]):
-                #CVE still active
-                    CVEList.append(data)
-            else :
-                if version.parse(B[1]) >= version.parse(versionA) and version.parse(B[1]) < version.parse(versionB):
-                    CVEList.append(data)
-
-        case 4 :
-            CVEList.append(data)
-
-        case 5 :
-            print("ERROR in CVE")
-
-        case 6 :
-            
-            if version.parse(B[1]) > version.parse("2.0.2"):
-                CVEList.append(data)
-        
-        case _ :
-            print("ERROR compare")
-
-#Check how to get info in the DB
-def WhichWay(data):
-    versionA = []
-    try :
-        
-        versionA = data["affected"][i]["database_specific"]["last_known_affected_version_range"]
-        
-        return 1                            
-    except :
-        try :
-            if len(data["affected"][0]["ranges"][0]["events"]) >1 :
-                try :
-                    versionA=data["affected"][0]["ranges"][0]["events"][1]["fixed"]
-                    return 2
-                except :
-                    versionA=data["affected"][0]["ranges"][0]["events"][1]["last_affected"]
-                    return 3
-            else :
-                try:
-                    #CVEList.append(data)
-                    return 4
-                except:
-                    return 5
-        except :
-            return 6
-            #if Package[1] > "2.0.2":
-             #   CVEList.append(data)
-              #  print(root+'/'+file)
-               # print(data)
-    return 'error'
-
-
-
-#This fonction will test one package and give back the list of cve json or an empty array if no cve was found, this is the bruteforce way, meaning it will check every cve in the dir.
-def TestPackage(Package,PathNewDB):
-    CVEList= []
-    if Package[0].split("/")[-1] == "minimist":
-        print(Package)
-    #print(Package[0].split("/")[-1])
-    if Package[0].split("/")[-1] in os.listdir("./NewDB") :
-        #Check every CVE on this package
-        for i, (root, dirs, filenames) in enumerate(os.walk(PathNewDB+'/'+Package[0].split("/")[-1])):
-            for file in filenames :
-                try:
-                    f = open(root+'/'+file,encoding="utf8")
-                except Exception:
-                    print("An error as occured in the TestPackage")
-                    return -2
-                data=json.load(f)
-                way = WhichWay(data)
-                
-                for i in range(len(data["affected"])):
-                    CompareVersion(Package,CVEList,data,way,i)
-    return CVEList
 
 
 

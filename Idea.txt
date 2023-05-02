@@ -30,3 +30,7 @@ Ask the user Authorization to modify code.
 Clone the CVE database https://github.com/github/advisory-database into a Local repository, transform the raw data that is hard to use into a simple Database that I will be able to use.
 
 Then make request to this database and show a report
+
+
+sqlite
+1 class = 1 table for the information of each cve
