@@ -8,9 +8,9 @@ import string
  #use java convention
 
 class Analyze:
-    def __init__(self,cveDB):
+    def __init__(self,db):
         self.listCVESite = []
-        self.listCVEDB = cveDB
+        self.db = db
         self.nbCVE = 0
         
 
@@ -30,16 +30,16 @@ class Analyze:
             case 1 :
                 versionA = data["affected"][i]["database_specific"]["last_known_affected_version_range"]
                 if "<=" in versionA :
-                    if version.parse(B[1]) <= version.parse(versionA.split()[1]):
+                    if version.parse(B) <= version.parse(versionA.split()[1]):
                     #CVE still active
                         self.listCVESite.append(data)
                         self.nbCVE +=1
                 elif "<" in versionA :
-                    if version.parse(B[1]) < version.parse(versionA.split()[1]):
+                    if version.parse(B) < version.parse(versionA.split()[1]):
                         self.listCVESite.append(data)
                         self.nbCVE +=1
                 else :
-                    if version.parse(B[1]) <= version.parse(versionA):
+                    if version.parse(B) <= version.parse(versionA):
                         self.listCVESite.append(data)
                         self.nbCVE +=1
 
@@ -49,12 +49,12 @@ class Analyze:
                 if "pre" in versionA :
                     versionA = versionA.replace("pre","")
                 if "<=" in versionB :
-                    if version.parse(B[1]) >= version.parse(versionA.split()[1]) and version.parse(B[1]) <= version.parse(versionB.split()[1]):
+                    if version.parse(B) >= version.parse(versionA.split()[1]) and version.parse(B) <= version.parse(versionB.split()[1]):
                     #CVE still active
                         self.listCVESite.append(data)
                         self.nbCVE +=1
                 else :
-                    if version.parse(B[1]) >= version.parse(versionA) and version.parse(B[1]) <= version.parse(versionB):
+                    if version.parse(B) >= version.parse(versionA) and version.parse(B) <= version.parse(versionB):
                         self.listCVESite.append(data)
                         self.nbCVE +=1
 
@@ -62,12 +62,12 @@ class Analyze:
                 versionA=data["affected"][0]["ranges"][0]["events"][0]["introduced"]
                 versionB=data["affected"][0]["ranges"][0]["events"][1]["last_affected"]
                 if "<=" in versionB :
-                    if version.parse(B[1]) >= version.parse(versionA.split()[1]) and version.parse(B[1]) <= version.parse(versionB.split()[1]):
+                    if version.parse(B) >= version.parse(versionA.split()[1]) and version.parse(B) <= version.parse(versionB.split()[1]):
                     #CVE still active
                         self.listCVESite.append(data)
                         self.nbCVE +=1
                 else :
-                    if version.parse(B[1]) >= version.parse(versionA) and version.parse(B[1]) < version.parse(versionB):
+                    if version.parse(B) >= version.parse(versionA) and version.parse(B) < version.parse(versionB):
                         self.listCVESite.append(data)
                         self.nbCVE +=1
 
@@ -80,7 +80,7 @@ class Analyze:
 
             case 6 :
             
-                if version.parse(B[1]) > version.parse("2.0.2"):
+                if version.parse(B) > version.parse("2.0.2"):
                     self.listCVESite.append(data)
                     self.nbCVE +=1
         
@@ -132,17 +132,16 @@ class Analyze:
         """
         #print(self.listCVEDB)
         #Check every CVE on this package
-        for cve in self.listCVEDB:
+        
             
-            nameCVE = cve[0]
-            if ":" in nameCVE :
-                nameCVE = nameCVE.split(":")[-1]
-            if package[0].split("/")[-1] == nameCVE.split("/")[-1] :
-                data = cve[2]
+        cvel = self.db.getInfo(package.nameSP)
+        if len(cvel) > 0 :
+            for cve in cvel:
+                data = cve[3]
                 jsondata = json.loads(data)
                 way = self.selectWay(jsondata)
                 for i in range(len(jsondata["affected"])):
-                    self.compareVersion(package,jsondata,way,i)
+                    self.compareVersion(package.versionSP,jsondata,way,i)
 
     def checkPackages(self,packages):
         """ Test every packages 

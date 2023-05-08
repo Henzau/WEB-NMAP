@@ -1,5 +1,6 @@
 import json
 from packaging import version
+from Package import Package
 
 class Extract:
     def __init__(self,path):
@@ -21,8 +22,9 @@ class Extract:
             self.nbPackage += 1
             version1 = data['packages'][i]['version']
             version1 =  version1.translate({ord(k): None for k in 'azertyuiopqsdfghjklmwxcvbnAZERTYUIOPQSDFGHJKLMWXCVBN?_-'})
-            name = i[13:]
-            self.webPackagesList.append((name,version1))
+            name = i.split("/")[-1]
+            packageWeb = Package(name,i,version1)
+            self.webPackagesList.append(packageWeb)
         # Closing file
         f.close()
          

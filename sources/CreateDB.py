@@ -7,7 +7,6 @@ class CreateDB:
         self.cveList = []
         self.nbcve = 0
         self.pathToMyDB = path
-        self.cveFromDB = []
 
     def createConnection(self):
         """ create a database connection to the SQLite database
@@ -38,21 +37,26 @@ class CreateDB:
         #Uncomment if db is dead
         cursor.execute("""CREATE TABLE CVEs(
                    name TEXT,
+                   path TEXT,
                    id TEXT,
                    JSON TEXT
             )""")
-        
         all_cve = []
         for cve in self.cveList:
-            packageName = cve["affected"][0]["package"]["name"]
-            id = cve["id"]
-            all_cve.append((str(packageName),str(id),str(cve)))
+            path= cve["affected"][0]["package"]["name"]
+            packageName = path.split("/")[-1]
+            cveid = cve["id"]
+            all_cve.append((packageName,path,cveid,json.dumps(cve)))
             
-        cursor.executemany("INSERT INTO CVEs VALUES (?,?,?)",all_cve)
+        cursor.executemany("INSERT INTO CVEs VALUES (?,?,?,?)",all_cve)
         conn.commit()
+
+        cursor.execute("CREATE INDEX name_idx ON CVEs (name)")
+        conn.commit()
+        cursor.close()
         conn.close()
 
-    def getInfo(self):
+    def getInfo(self,name):
         """
         Query all rows in the packages table
         :param: none
@@ -60,11 +64,14 @@ class CreateDB:
         """
         conn = self.createConnection()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM CVEs")
-
-        
-        self.cveFromDB  = cursor.fetchall()
+        cursor.execute("SELECT * FROM CVEs WHERE name = ?", (name,))
+        cvel= cursor.fetchall()
+        cursor.close()
         conn.close()
+        
+        
+        return cvel
+        
 
             
 
