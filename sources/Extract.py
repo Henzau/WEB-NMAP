@@ -26,5 +26,6 @@ class Extract:
             packageWeb = Package(name,i,version1)
             self.webPackagesList.append(packageWeb)
         # Closing file
+        self.webPackagesList = self.webPackagesList[1:]
         f.close()
          
