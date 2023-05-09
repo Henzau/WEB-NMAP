@@ -52,8 +52,13 @@ if __name__=="__main__":
             site = Extract(sys.argv[2])
             site.getPackages()
             analyze.checkPackages(site.webPackagesList)
-            print("Number of CVE found in the website :" + str(analyze.nbCVE))
         
-        if(sys.argv[1]=="test" and len(sys.argv)==5 ):
-            t=sys.argv[3].split(":")
-            lib.TestMusic(sys.argv[2],[(int)(t[0]),(int)(t[1])],(int)(sys.argv[4]))
+        if(sys.argv[1]=="test" ):
+            db = CreateDB(PATH_TO_DB)
+            site = Extract(sys.argv[2])
+            site.getPackages()
+            for pack in site.webPackagesList:
+                if pack.nameSP == "json5":
+                    pack.printInfoPackage()
+
+            
