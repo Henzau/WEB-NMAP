@@ -147,7 +147,6 @@ class Analyze:
         #print(self.listCVEDB)
         #Check every CVE on this package
         
-        
         cvel = self.db.getInfo(package.nameSP)
         if len(cvel) > 0 :
             for cve in cvel:
