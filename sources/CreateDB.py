@@ -96,7 +96,6 @@ class CreateDB:
                     versionF = ""
                     versionD = ""
                     test = 0
-                    # print(len(data["affected"]))
                     for p in range(len(data["affected"])) :
                         try :
                             versionI = data["affected"][p]["ranges"][0]["events"][0]["introduced"]

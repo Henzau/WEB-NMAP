@@ -3,9 +3,11 @@ from CreateDB import CreateDB
 from Extract import Extract
 import sys
 import os
+import git 
+            
 
 PATH_TO_DB = "../SQLITEDB/CVEDB.db"
-PATH_TO_RAW_DB = "../../RawDB/advisory-database/advisories/github-reviewed"
+PATH_TO_RAW_DB = "../../RawDB/advisories/github-reviewed"
 
 if __name__=="__main__":
     """Analyze a website packages with the advisory database.
@@ -53,12 +55,16 @@ if __name__=="__main__":
             site.getPackages()
             analyze.checkPackages(site.webPackagesList)
         
-        if(sys.argv[1]=="test" ):
-            db = CreateDB(PATH_TO_DB)
-            site = Extract(sys.argv[2])
-            site.getPackages()
-            for pack in site.webPackagesList:
-                if pack.nameSP == "json5":
-                    pack.printInfoPackage()
+        if(sys.argv[1]=="UpdateDB" ):
+            repo = git.Repo("../../RawDB/")
+            o = repo.remotes.origin
+            o.pull()
+
+            if os.path.exists(PATH_TO_DB):
+	            os.remove(PATH_TO_DB)
+	            print("The previous db was removed")
+            db = CreateDB(PATH_TO_DB) #r"../SQLITEDB/CVEDB.db"
+            db.getRawDB(PATH_TO_RAW_DB) # C:/Users/blood/source/repos/RawDB/advisory-database/advisories/github-reviewed
+            db.addTabDB()
 
             
