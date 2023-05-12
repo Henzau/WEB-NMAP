@@ -1,6 +1,7 @@
 from Analyze import Analyze  
 from CreateDB import CreateDB 
 from Extract import Extract
+from Interface import Interface
 import sys
 import os
 import git 
@@ -19,8 +20,8 @@ if __name__=="__main__":
         print("-Extract      Extract every packages from a website \n| WebNmap.py Extract [path]  \n")
         print("-Analyze      Analyze the website packages and give a report \n| WebNmap.py Analyze [pathToJsonPackageLock]  \n")
     else: 
-        if(sys.argv[1]=="interface" and len(sys.argv)!=2 ):
-            print("\nusage : WebNmap.py interface")
+        if(sys.argv[1]=="Interface" and len(sys.argv)!=2 ):
+            print("\nusage : WebNmap.py Interface")
         
         if(sys.argv[1]=="CreateDB" and len(sys.argv)!=2 ):
             print("\nusage : WebNmap.py CreateDB ")
@@ -67,4 +68,7 @@ if __name__=="__main__":
             db.getRawDB(PATH_TO_RAW_DB) # C:/Users/blood/source/repos/RawDB/advisory-database/advisories/github-reviewed
             db.addTabDB()
 
+        if(sys.argv[1]=="Interface" and len(sys.argv)==2 ):
+            interface = Interface()
+            interface.app()
             
