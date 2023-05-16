@@ -91,6 +91,7 @@ class CreateDB:
                     return
                 data= json.load(f)
                 if data["affected"][0]["package"]["ecosystem"] == "npm":
+                    
                     name = data["affected"][0]["package"]["name"]
                     versionI = ""
                     versionF = ""
