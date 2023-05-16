@@ -9,5 +9,4 @@ class CVE :
 		self.summary = summary 
 
 	def printCVE(self):
-		print("ouais")
 		print((self.webPackage,self.name,self.version,self.severity))

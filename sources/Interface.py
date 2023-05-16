@@ -83,7 +83,7 @@ class Interface:
         tabControl.add(onglet1, text='CreateDB')
         tabControl.add(onglet1_2, text='Extract')
         tabControl.add(onglet2, text='Analyze')
-        tabControl.add(onglet3, text='Extract')
+        tabControl.add(onglet3, text='Info')
         
 
         onglet1.grid_columnconfigure(0, weight=1)
