@@ -1,0 +1,16 @@
+{
+	"vendor.option" : {
+		"POSTGRESQL": 1,
+		"MARIADB": 2,
+		"MYSQL": 3,
+		"ORACLE": 4,
+		"SQLITE": 5,
+		"MSSQL": 6
+	},
+	"vendor" : 1,
+	"host": "localhost",
+	"port": 5432,
+	"user": "DB_USER",
+	"password": "SECRET_PASSWORD",
+	"database": "DB_NAME"
+}
