@@ -19,8 +19,8 @@ class CVE(Record):
 	data = JSONColumn()
 
 	def __init__(self, raw) :
-		self.name = raw["affected"][0]["package"]["name"]
-		self.path = raw["affected"][0]["package"]["name"].split("/")[-1]
+		self.name = raw["affected"][0]["package"]["name"].split("/")[-1]
+		self.path = raw["affected"][0]["package"]["name"]
 		self.CVEid = raw["id"]
 		self.data = raw
 
@@ -54,7 +54,7 @@ else :
 	session = PostgresDBSession(config)
 	session.connect()
 	session.appendModel(CVE)
-	session.createTable()
+	session.createTable()	
 	session.insertMultiple([CVE(i) for i in RawDB.cveList])
 	test:List[CVE] = session.selectRaw(CVE,"WHERE name = 'json5'")
 	applyData(test)
