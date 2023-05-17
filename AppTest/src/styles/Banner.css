@@ -1,0 +1,24 @@
+.mia-banner {
+	color: black;
+	margin:0;
+	width: 100vw;
+	text-align: left;
+	border-bottom: solid 3px black;
+	display: flex;
+	justify-content: space-between ;
+	flex-direction: row;
+	align-items: center;
+}
+
+
+.mia-title {
+	padding-right: 5vw;
+}
+
+.mia-logo{
+	margin-left: 5vw;
+	height: 10vmin;
+	width: 10vmin;
+	z-index: 5;
+	
+}
