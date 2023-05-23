@@ -90,7 +90,9 @@ class CreateDB:
                     print("An error as occured")
                     return
                 data= json.load(f)
-                if data["affected"][0]["package"]["ecosystem"] == "npm":
+                if "Duplicate" in data["details"] :
+                    pass
+                else :
                     
                     name = data["affected"][0]["package"]["name"]
                     versionI = ""
