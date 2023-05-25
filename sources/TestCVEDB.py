@@ -111,7 +111,7 @@ async def initialize(config) -> List[CVE]:
 		
 		if record is not None and record not in update:
 			continue
-		#	#record.fromDict(eco)
+		#	#record.fromDict(eco)  We don't want to do anything here
 		#	await session.update(record)  
 		#	update.add(record)
 		else :
@@ -119,23 +119,13 @@ async def initialize(config) -> List[CVE]:
 			ecoSystemMap[record.ecosystem] = record
 			insert.append(record)
 	await session.insertMultiple(insert, True, True)
+	for eco in ecoSystemList :
+		print(eco.ecosystem)
 	
 
 	cveList:List[CVE] = await session.select(CVE, "")
 	listID:List[str] = [cveDB.ADVid for cveDB in cveList]
 	insertCVE = list()
-	print(cveList)
-	count =0
-	for obj in cveList:
-		print(obj.name)
-		print(obj.path)
-		print(obj.ADVid)
-		print(obj.summary)
-		print(len(obj.affected))
-		print(obj.severity)
-		print("oui \n\n")
-		count+=1
-	print(count)
 	for raw in RawDB.cveList :
 		cve1 = CVE(raw)
 		if cve1.ADVid in listID :
@@ -146,17 +136,17 @@ async def initialize(config) -> List[CVE]:
 				affected.eco = ecoSystemMap.get(affected.name, None)
 				if affected.eco is not None :
 					filtered.append(affected)
-			print(filtered)
 			cve1.affected = filtered
 			insertCVE.append(cve1)
 	
-	await session.insertMultiple(insertCVE[:3000], True, True)
+	# Cannot insert everything at once, it is too big for postgreSQL
+	await session.insertMultiple(insertCVE[:2000], True, True)
 	#await session.insertMultiple(insertCVE[3000:6000], True, True)
 	#await session.insertMultiple(insertCVE[6000:9000], True, True)
 	#await session.insertMultiple(insertCVE[9000:], True, True)
 
 	# await session.insertMultiple([CVE(i) for i in RawDB.cveList], True, True)
-	ecoSystemList = await session.select(EcoSystem, "WHERE ecosystem = 'npm' ")
+	ecoSystemList = await session.select(EcoSystem, "WHERE ecosystem = 'PyPI' ")
 	# print(ecoSystemList)
 	# print(f"({','.join([str(i.id) for i in  ecoSystemList])})")
 	clause = f"WHERE eco IN ({','.join([str(i.id) for i in  ecoSystemList])})"
@@ -171,7 +161,11 @@ def applyData(fetched:List[CVE]) :
 	for cve in fetched:
 		#print(dir(cve))
 		print(cve.name)
+		print(cve.ADVid)
 		print(cve.path)
+		print(cve.summary)
+		print(cve.severity)
+		print("end cve \n")
 
 if IS_ASYNC :
 	loop = asyncio.get_event_loop()

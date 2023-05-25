@@ -23,3 +23,16 @@ https://trello.com/b/tYD9ZQUJ/plannification
 
 
  
+# environment web available 
+PyPI   = The Python Package Index (PyPI) is a repository of software for the Python programming language.
+npm
+crates.io    -> Can create web app using the "Rocket Web Framework"
+Packagist   -> Packagist is a tool in the Hosted Package Repository category of a tech stack that aggregates public PHP packages installable with Composer.
+Maven    -> Maven is a powerful project management tool that is based on POM (project object model).
+NuGet    -> NuGet is a package manager that delivers compiled source code (DLLs) and other files (scripts and images) related to code. A NuGet package takes the form of a zip file with the extension .nupkg. This makes adding, updating, and removing libraries easy in Visual Studio applications.
+Go   -> Go is a statically typed, compiled high-level programming language   Can create web app
+RubyGems   -> Package manager for Ruby language ecosystem
+GitHub Actions   -> GitHub Actions is a continuous integration and continuous delivery (CI/CD) platform that automates the build, test, and deployment of software.
+Hex   -> Hex is a package manager for the Erlang VM that provides tasks that integrate with Mix, Elixir's build tool
+Pub  ->  Pub is the package manager for the Dart programming language
+purl-type:swift  -> The Swift Package Manager is a tool for managing the distribution of source code in Swift
