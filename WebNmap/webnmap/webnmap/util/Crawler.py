@@ -9,6 +9,8 @@ from webnmap.webnmap.model.CVE import CVE
 from gaimon.util.CommonDBBounded import CommonDBBounded
 from typing import List
 
+git_url = "https://github.com/github/advisory-database.git"
+repo_dir= "./RawDB"
 
 class Crawler:
     def __init__(self,path):
@@ -22,7 +24,7 @@ class Crawler:
     def pullGithub(self):
         git.Repo.clone_from(git_url, repo_dir)
 
-        repo = git.Repo(self.pathToRawDB)
+        repo = git.Repo(repo_dir)
         
         # Check the status of the repository
         repo_status = repo.git.status()
