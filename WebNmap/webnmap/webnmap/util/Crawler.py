@@ -7,6 +7,7 @@ from webnmap.webnmap.model.Affected import Affected
 from webnmap.webnmap.model.EcoSystem import EcoSystem
 from webnmap.webnmap.model.CVE import CVE
 from gaimon.util.CommonDBBounded import CommonDBBounded
+from typing import List
 
 
 class Crawler:
@@ -271,14 +272,14 @@ class Crawler:
                 
 if __name__=="__main__":
     config = {}
-    with open("/home/henzhau/WebNmap/webnmap/webnmap/config/global/WebNmap.json") as fd :  # ../config/global/WebNmap.json
+    with open("/etc/gaimon/extension/webnmap/WebNmap.json") as fd :  # ../config/global/WebNmap.json
         config["DB"] = json.load(fd)
 
     crawler = Crawler("./RawDB/advisory-database")
     crawler.pullGithub()
     crawler.getRawDB()
     
-    def applyData(fetched:list[CVE]) :
+    def applyData(fetched:List[CVE]) :
         print(f">>> Total {len(fetched)}")
         """
         for cve in fetched:
