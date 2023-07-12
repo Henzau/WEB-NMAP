@@ -33,12 +33,15 @@ class WebNmapService(AsyncService):
 		self.config["DB"]["connectionNumber"]= self.config.get("DBConnectionNumber",2)
 		self.pool = AsyncDBSessionPool(self.config["DB"])
 		await self.pool.createConnection()
+		print(f">>> Service.connect n={len(self.pool.pool)}")
 		self.session = await self.pool.getSession()
 		await AsyncDBSessionPool.browseModel(self.session, WebNModel)
 		await AsyncDBSessionPool.browseModel(self.session, MainModel)
 		await self.session.createTable()
 		self.session.checkModelLinking()
-		#await self.sessionPool.release(self.session)
+		await self.sessionPool.release(self.session)
+		print(f">>> Service.connected n={len(self.pool.pool)}")
+
 		
 	def setHandler(self):
 		self.appendHandler(WebNmapHandler)
@@ -54,6 +57,7 @@ class WebNmapService(AsyncService):
 
 
 	async def prepareHandler(self, handler, request, parameter):
+		print(f">>> Service.prepareHandler n={len(self.pool.pool)}")
 		entity: str = None if parameter is None else parameter.get('entity', None)
 		handler.session = await self.pool.getSession()
 		if entity is not None and handler.session.vendor == Vendor.POSTGRESQL:
@@ -79,6 +83,7 @@ class WebNmapService(AsyncService):
 		#print(handler)
 		#print(handler.management)
 		await self.pool.release(handler.session)
+		print(f">>> Service.releaseHandler n={len(self.pool.pool)}")
 		#await self.releaseManagement(handler.management)
 
 	async def releaseManagement(self, management: WebNmapManagement):
