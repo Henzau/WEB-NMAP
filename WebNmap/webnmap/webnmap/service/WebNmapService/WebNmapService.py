@@ -47,30 +47,37 @@ class WebNmapService(AsyncService):
 			self.sendTask.append(loop.create_task(management.send()))
 
 
-	async def prepareHandler(self, handler, request, parameter):
+	async def prepareHandler(self, handler, request, parameter, hasDBSession):
 		print(f">>> Service.prepareHandler n={len(self.pool.pool)}")
 		entity: str = None if parameter is None else parameter.get('entity', None)
-		handler.session = await self.pool.getSession()
-		if entity is not None and handler.session.vendor == Vendor.POSTGRESQL:
-			handler.session.setSchema(entity)
+		if hasDBSession :
+			handler.session = await self.pool.getSession()
+			if entity is not None and handler.session.vendor == Vendor.POSTGRESQL:
+				handler.session.setSchema(entity)
+		else :
+			handler.session = None
 		handler.management = await self.getManagement(parameter)
+		print(f'>>> {entity} {id(handler.management)}')
 
-	async def getManagement(self, parameter: dict, session: AsyncDBSessionBase) -> WebNmapManagement:
+	async def getManagement(self, parameter: dict) -> WebNmapManagement:
 		entity: str = None if parameter is None else parameter.get('entity', None)
 		resourcePath = f"{self.resourcePath}/webnmap"
 		if not os.path.isdir(resourcePath): os.makedirs(resourcePath)
 		management = self.managementMap.get(entity, None)
 		if management is not None : return management
+		session: AsyncDBSessionBase = await self.pool.getSession()
 		management = WebNmapManagement( self.resourcePath, entity)
 		management.entity = entity
 		management.checkPath()
 		await management.prepare(session)
 		await management.prepareAnalyze(session)
 		self.managementMap[entity] = management
+		await self.pool.release(session)
 		return management
 
 	async def releaseHandler(self, handler : WebNmapHandler):
-		await self.pool.release(handler.session)
+		if handler.session is not None :
+			await self.pool.release(handler.session)
 		print(f">>> Service.releaseHandler n={len(self.pool.pool)}")
 
 	async def prepare(self):

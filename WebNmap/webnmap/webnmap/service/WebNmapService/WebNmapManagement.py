@@ -85,7 +85,7 @@ class WebNmapManagement:
 			await self.webObject.getPackages(self.packagesListFile,eco,session,sessionName)
 		#print("Object created")
 	
-	async def Analyze(self,session,sessionName):
+	async def analyze(self,session,sessionName):
 		self.analyze = Analyze(session,self.eco,self.cveByName)
 		webPackagesList =[]
 		if sessionName in self.webPackageSessionNameDict:
