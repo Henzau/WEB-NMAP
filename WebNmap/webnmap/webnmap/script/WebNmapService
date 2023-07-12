@@ -1,0 +1,29 @@
+#!/usr/bin/python3
+
+from gaimon.util.ProcessUtil import readConfig, daemonize, setSystemPath
+
+import sys, argparse
+
+__parser__ = argparse.ArgumentParser(description="Gaimon WebNmap server.")
+__parser__.add_argument("-n", "--namespace", help="Namespace of webnmap.")
+__parser__.add_argument("-d", "--daemon", help="Run in daemon mode.", choices=['start', 'stop', 'restart', 'kill'],)
+__option__ = __parser__.parse_args(sys.argv[1:])
+__namespace__ = '' if __option__.namespace is None else __option__.namespace
+__config__ = readConfig(
+	['/extension/webnmap/WebNmapService.json'],
+	{
+		"DB": "Database.json"
+	},
+	__namespace__
+)
+if len(__namespace__) : setSystemPath(__namespace__)
+
+from webnmap.webnmap.service.WebNmapService.WebNmapService import WebNmapService
+__config__['processNumber'] = 1
+__webnmap__ = WebNmapService(__config__, __namespace__)
+
+if __name__ == '__main__' :
+	if  __option__.daemon :
+		daemonize('gaimon-webnmap', __option__.daemon, __webnmap__.run, '')
+	else :
+		__webnmap__.run()

@@ -1,0 +1,6 @@
+{
+	"host" : "localhost",
+	"port" : 1159,
+	"sleepTime" : 300,
+	"timeOut" : 60
+}

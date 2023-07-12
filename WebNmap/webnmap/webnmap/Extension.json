@@ -1,0 +1,24 @@
+{
+	"ID" : "webnmap",
+	"name" : "WebNmap",
+	"version" : "1.0",
+	"require" : [],
+	"role" : [],
+	"backend" : {
+		"script" : [
+			"WebNmap.js"
+		],
+		"css" : [
+		],
+		"menu" : [
+			{
+				"group": {
+					"label": "WebNmap",
+					"icon": "webnmap.Default",
+					"order": "1.0"
+				},
+				"child": []
+			}
+		]
+	}
+}
