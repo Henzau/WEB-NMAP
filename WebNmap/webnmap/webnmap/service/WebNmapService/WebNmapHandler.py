@@ -17,12 +17,12 @@ class WebNmapHandler:
         self.management: WebNmapManagement = None
         self.session: AsyncDBSessionBase = None
 
-    @POST('/benchmark')
+    @POST('/benchmark', hasDBSession=False)
     async def benchmark(self, request, parameter):
         return {'isSuccess': True}
     
 
-    @POST('/eco')
+    @POST('/eco', hasDBSession=False)
     async def getEco(self, request, parameter):
         econame = parameter['eco']
         if econame is not None :
@@ -31,25 +31,25 @@ class WebNmapHandler:
     
   
     
-    @POST('/extract')
+    @POST('/extract', hasDBSession=True)
     async def postFile(self, request, parameter):
         sessionName = parameter['sessionName']
 
         file = parameter['file']
         eco = parameter['eco']
         if file is not None and eco is not None :
-            await self.management.getPackage(file,eco,self.session,sessionName)      
+            await self.management.getPackage(file, eco, self.session, sessionName)      
 
         return {'isSuccess': True}
     
-    @POST('/report')
+    @POST('/report', hasDBSession=False)
     async def getReport(self, request, parameter):
         sessionName = parameter['sessionName']
 
         await self.management.Analyze(self.session,sessionName)
         return {'isSuccess':True}
     
-    @POST('/trigger')
+    @POST('/trigger', hasDBSession=True)
     async def trigger(self,request,parameter):
         await self.management.trigger(self.session)
         #self.service.releaseHandler(self.management)  # Note sur if it works this way
