@@ -19,7 +19,10 @@ class Crawler:
         self.cursor = {}
 
     def pullGithub(self):
+        git.Repo.clone_from(git_url, repo_dir)
+
         repo = git.Repo(self.pathToRawDB)
+        
         # Check the status of the repository
         repo_status = repo.git.status()
         print(repo_status)
