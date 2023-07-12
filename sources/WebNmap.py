@@ -62,8 +62,8 @@ if __name__=="__main__":
             o.pull()
 
             if os.path.exists(PATH_TO_DB):
-	            os.remove(PATH_TO_DB)
-	            print("The previous db was removed")
+                os.remove(PATH_TO_DB)
+                print("The previous db was removed")
             db = CreateDB(PATH_TO_DB) #r"../SQLITEDB/CVEDB.db"
             db.getRawDB(PATH_TO_RAW_DB) # C:/Users/blood/source/repos/RawDB/advisory-database/advisories/github-reviewed
             db.addTabDB()

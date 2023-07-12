@@ -129,15 +129,15 @@ async def initialize(config) -> List[CVE]:
 	for raw in RawDB.cveList :
 		cve1 = CVE(raw)
 		if cve1.ADVid in listID :
-			pass
-		else :
-			filtered = list()
-			for affected in cve1.affected :   
-				affected.eco = ecoSystemMap.get(affected.name, None)
-				if affected.eco is not None :
-					filtered.append(affected)
-			cve1.affected = filtered
-			insertCVE.append(cve1)
+			continue
+
+		filtered = list()
+		for affected in cve1.affected :   
+			affected.eco = ecoSystemMap.get(affected.name, None)
+			if affected.eco is not None :
+				filtered.append(affected)
+		cve1.affected = filtered
+		insertCVE.append(cve1)
 	
 	# Cannot insert everything at once, it is too big for postgreSQL
 	await session.insertMultiple(insertCVE[:2000], True, True)
@@ -159,8 +159,8 @@ async def initialize(config) -> List[CVE]:
 def applyData(fetched:List[CVE]) :
 	print(f">>> Total {len(fetched)}")
 	for cve in fetched:
-		#print(dir(cve))
-		print(cve.name)
+		print(dir(cve))
+		print(cve.name)*ù
 		print(cve.ADVid)
 		print(cve.path)
 		print(cve.summary)

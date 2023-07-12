@@ -94,7 +94,6 @@ class CreateDB:
                     pass
                 else :
                     
-                    name = data["affected"][0]["package"]["name"]
                     versionI = ""
                     versionF = ""
                     versionD = ""
