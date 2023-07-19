@@ -27,8 +27,6 @@ class WebNmapManagement:
 		self.eco = None
 		self.packagesListFile = None
 		self.webObject = {}
-		self.analyze = {}
-
 		self.entity = entity  # NOTE Not needed ?
 		self.resourcePath = f'{resourcePath}/notification/Entity-{entity}/' # NOTE Not needed ?
 		self.sleepTime = sleepTime  # NOTE Not needed ?
@@ -38,8 +36,9 @@ class WebNmapManagement:
 		self.webObject = Extract()
 
 
-	async def prepare(self, session: AsyncDBSessionBase):
-		self.webPackageList:List[Package] = await session.select(Package,"")
+	async def prepare(self):
+		#self.webPackageList:List[Package] = await session.select(Package,"")
+		self.webPackageList:List[Package] = []
 
 		self.webPackageID = {webPackage.id for webPackage in self.webPackageList}
 
@@ -57,10 +56,8 @@ class WebNmapManagement:
 			clause = f"WHERE eco IN ({','.join([str(i.id) for i in  ecoSystemList])})"
 			affectedList = await session.select(Affected, clause, isRelated=True)
 		self.cveList = [i.cve for i in affectedList]
-		
 
 		self.CveId = {}
-
 		self.cveByName = {}
 		for cve in self.cveList:
 			if cve.ADVid not in self.CveId :
@@ -68,25 +65,30 @@ class WebNmapManagement:
 				if cve.name not in self.cveByName:
 					self.cveByName[cve.name] = []
 				self.cveByName[cve.name].append(cve)
+		self.analyzer = Analyze(self.cveByName)
+		self.analyzeAnswer= {}
+
 
 	async def getEco(self,eco):
 		self.eco = eco
 		#print("Eco selected : "+self.eco)
 
-	async def getPackage(self,file,eco,session,sessionName):
+	async def getPackage(self,file,eco,sessionName):
 		self.packagesListFile = file
 		#print("File system acquired ")
-		await self.createPackagesList(eco,session,sessionName)
+		await self.createPackagesList(eco,sessionName)
 	
-	async def createPackagesList(self,eco,session,sessionName):
+	async def createPackagesList(self,eco,sessionName):
 		if self.packagesListFile is None : return
 		if eco is None : return
 		if sessionName not in self.webPackageSessionNameDict:
-			await self.webObject.getPackages(self.packagesListFile,eco,session,sessionName)
+			self.webPackageSessionNameDict[sessionName] = await self.webObject.getPackages(self.packagesListFile,eco,sessionName)
 		#print("Object created")
 	
 	async def analyze(self,session,sessionName):
-		self.analyze = Analyze(session,self.eco,self.cveByName)
+
+		if self.analyzer.eco is None : self.analyzer.eco = self.eco
+		
 		webPackagesList =[]
 		if sessionName in self.webPackageSessionNameDict:
 			webPackagesList = self.webPackageSessionNameDict[sessionName]
@@ -95,12 +97,19 @@ class WebNmapManagement:
 			if sessionName in self.webPackageSessionNameDict:
 				webPackagesList = self.webPackageSessionNameDict[sessionName]
 
-
-		# webPackagesList = await session.select(Package,"WHERE sessionName=?",parameter=(sessionName,))
 		if len(webPackagesList) == 0 : return		
 		#print("Analyzing packages")
-		await self.analyze.checkPackages(sessionName,webPackagesList)
-		#self.analyze.reportPrint()
+		#print("nb webpackage : " + str(len(webPackagesList)))
+	
+		if sessionName not in self.analyzeAnswer :
+				self.analyzeAnswer[sessionName] = await self.analyzer.checkPackages(webPackagesList)
+				#print("create new analyzing for client : "+str(sessionName))
+		else :
+				#print("result already known in map for client : "+str(sessionName))
+				pass
+
+		#print(len(self.analyzeAnswer[sessionName]))
+		#self.analyzer.reportPrint()
 	
 	async def trigger(self,session):
 		await self.prepare(session)

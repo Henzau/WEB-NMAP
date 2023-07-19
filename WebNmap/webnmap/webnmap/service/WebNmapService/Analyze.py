@@ -14,26 +14,17 @@ from webnmap.webnmap.model.WebNmapCVE import WebNmapCVE
 
  #use java convention
 
-config = {}
-with open("/home/henzhau/WebNmap/webnmap/webnmap/config/global/WebNmap.json") as fd :  # ../config/global/WebNmap.json
-    config["DB"] = json.load(fd)
-
-
-
 
 
 class Analyze:
-    def __init__(self,session,eco,cveByName):
+    def __init__(self,cveByName):
         self.listCVESite = []
-        self.nbCVE = 0
-        self.session = session
-        self.eco = eco
+        self.eco = None
         self.cveByName = cveByName   
     
     def createCVE(self,package,name,version,CVEid,severity,ADVID,summary,fixed):
         cve = WebNmapCVE(name,version,CVEid,severity,package,ADVID,summary,fixed)
         self.listCVESite.append(cve)
-        self.nbCVE += 1
         
         
     def compareVersion(self,B,data,way,i):
@@ -204,14 +195,13 @@ class Analyze:
                         if jsondata["affected"][i]["package"]["name"] == package.nameSP:
                             self.compareVersion(package,jsondata,way,i)
 
-    @lru_cache(maxsize = 100)
-    async def checkPackages(self,sessionName,packages):
+    #@lru_cache(maxsize = 100)
+    async def checkPackages(self,packages):
         """ Test every packages 
             :param: packages : list of packages from the siteweb   
             :return: none
         """
-        print(sessionName+ " is analyzing ")
-        
+        self.listCVESite = []
         for package in packages:
             if package.nameSP in self.cveByName:
                 await self.testPackage(package,self.cveByName[package.nameSP])
